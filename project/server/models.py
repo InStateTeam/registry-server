@@ -16,6 +16,7 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     registered_on = db.Column(db.DateTime, nullable=False)
     admin = db.Column(db.Boolean, nullable=False, default=False)
+    virtual_users = db.relationship("VirtualUser", backref="User", lazy='dynamic')
 
     def __init__(self, email, password, admin=False):
         self.email = email
@@ -89,3 +90,23 @@ class BlacklistToken(db.Model):
             return True
         else:
             return False
+
+class VirtualUser(db.Model):
+    __tablename__ = "virtual_users"
+    id = db.Column('virtual_user_id', db.Integer, primary_key=True)
+    name = db.Column('name', db.String(500), nullable=False)
+    username = db.Column('username', db.String(500))
+    password = db.Column('password', db.String(500))
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship('User')
+
+    def __init__(self, name, username, password, user):
+        self.name = name
+        self.username = username
+        self.password = password
+
+        self.user = user
+
+    def __repr__(self):
+        return '<VirtualUser %r>' % self.id

@@ -1,11 +1,12 @@
 # project/server/auth/views.py
 
 
-from flask import Blueprint, request, make_response, jsonify
+from flask import Blueprint, request, make_response, jsonify, abort
 from flask.views import MethodView
 
 from project.server import bcrypt, db
-from project.server.models import User, BlacklistToken
+from project.server.models import User, BlacklistToken, VirtualUser
+
 
 auth_blueprint = Blueprint('auth', __name__)
 
@@ -132,6 +133,114 @@ class UserAPI(MethodView):
                 'message': 'Provide a valid auth token.'
             }
             return make_response(jsonify(responseObject)), 401
+    
+
+class VirtualUsersAPI(MethodView):
+    """
+    User Resource
+    """
+    def get(self, user_id, virtual_user_name):
+        # get the auth token
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            try:
+                auth_token = auth_header.split(" ")[1]
+            except IndexError:
+                responseObject = {
+                    'status': 'fail',
+                    'message': 'Bearer token malformed.'
+                }
+                return make_response(jsonify(responseObject)), 401
+        else:
+            auth_token = ''
+        if auth_token:
+            resp = User.decode_auth_token(auth_token)
+            if not isinstance(resp, str):
+                authenticated_user = User.query.filter_by(id=resp).first()
+                responseObject = self.successful_response_object(authenticated_user, user_id, virtual_user_name)
+                return make_response(jsonify(responseObject)), 200
+            responseObject = {
+                'status': 'fail',
+                'message': resp
+            }
+            return make_response(jsonify(responseObject)), 401
+        else:
+            responseObject = {
+                'status': 'fail',
+                'message': 'Provide a valid auth token.'
+            }
+            return make_response(jsonify(responseObject)), 401
+
+    def post(self, user_id, virtual_user_name):
+        # get the post data
+        post_data = request.get_json()
+        # check if user already exists
+        user = User.query.filter_by(id=user_id).first()
+        username = post_data.get('username')
+        password  = post_data.get('password')
+        # if not user:
+        if not False:
+            try:
+                newVirtualUser = VirtualUser(virtual_user_name, username, password, user)
+                user.virtual_users.extend([newVirtualUser])
+                db.session.add_all([newVirtualUser])
+                db.session.commit()
+                # generate the auth token
+                auth_token = user.encode_auth_token(user.id)
+                responseObject = {
+                    'status': 'success',
+                    'message': 'Successfully added virtual user',
+                }
+                return make_response(jsonify(responseObject)), 201
+            except Exception as e:
+                responseObject = {
+                    'status': 'fail',
+                    'message': 'Some error occurred. Please try again.',
+                }
+                return make_response(jsonify(responseObject)), 401
+        else:
+            responseObject = {
+                'status': 'fail',
+                'message': 'User already exists. Please Log in.',
+            }
+            return make_response(jsonify(responseObject)), 202
+
+        
+    def successful_response_object(self, authenticated_user, requested_user_id, requested_virtual_user_name):
+        if requested_user_id:
+            requested_user = User.query.filter_by(id=requested_user_id).first()
+            if not requested_user:
+                abort(404)
+            if requested_virtual_user_name:
+                virtual_user = requested_user.virtual_users.filter_by(name=requested_virtual_user_name).first()
+                responseObject = {
+                    'status': 'success',
+                    'data': {
+                        'username': virtual_user.username,
+                        'password': virtual_user.password,
+                    }
+                }
+            else:
+                responseObject = {
+                    'status': 'success',
+                    'data': {
+                        'user_id': requested_user.id,
+                        'email': requested_user.email,
+                        'admin': requested_user.admin,
+                        'registered_on': requested_user.registered_on,
+                        'newfield': 'hello'
+                    }
+                }
+        else:
+            responseObject = {
+                'status': 'success',
+                'data': [
+                        'user1',
+                        'user2',
+                ]
+            }
+        return responseObject
+
 
 
 class LogoutAPI(MethodView):
@@ -182,6 +291,7 @@ class LogoutAPI(MethodView):
 registration_view = RegisterAPI.as_view('register_api')
 login_view = LoginAPI.as_view('login_api')
 user_view = UserAPI.as_view('user_api')
+virtual_user_view = VirtualUsersAPI.as_view('virtual_user_api')
 logout_view = LogoutAPI.as_view('logout_api')
 
 # add Rules for API Endpoints
@@ -204,4 +314,21 @@ auth_blueprint.add_url_rule(
     '/auth/logout',
     view_func=logout_view,
     methods=['POST']
+)
+auth_blueprint.add_url_rule(
+    '/users/',
+    defaults={'user_id': None, 'virtual_user_name': None},
+    view_func = virtual_user_view,
+    methods=['GET']
+)
+auth_blueprint.add_url_rule(
+    '/users/<int:user_id>',
+    defaults={'virtual_user_name': None},
+    view_func = virtual_user_view,
+    methods=['GET']
+)
+auth_blueprint.add_url_rule(
+    '/users/<int:user_id>/<string:virtual_user_name>',
+    view_func = virtual_user_view,
+    methods=['GET', 'POST']
 )
