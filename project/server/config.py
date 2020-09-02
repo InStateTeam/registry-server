@@ -2,7 +2,9 @@
 
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
-postgres_local_base = 'sqlite:////tmp/' # 'postgresql://postgres:@localhost/'
+print(f"basedir{basedir}")
+#postgres_local_base = 'sqlite:////tmp/' # 'postgresql://postgres:@localhost/'
+postgres_local_base = 'sqlite:///' + basedir + '/'
 database_name = 'flask_jwt_auth_2'
 
 

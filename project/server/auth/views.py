@@ -10,6 +10,7 @@ from project.server.models import User, BlacklistToken, VirtualUser
 
 auth_blueprint = Blueprint('auth', __name__)
 
+MAGIC_ADMIN_NAME = "admin@instate.io"
 
 class RegisterAPI(MethodView):
     """
@@ -23,9 +24,13 @@ class RegisterAPI(MethodView):
         user = User.query.filter_by(email=post_data.get('email')).first()
         if not user:
             try:
+                whether_user_should_be_admin = False
+                if post_data.get('email') == MAGIC_ADMIN_NAME:
+                    whether_user_should_be_admin=True
                 user = User(
                     email=post_data.get('email'),
-                    password=post_data.get('password')
+                    password=post_data.get('password'),
+                    admin=whether_user_should_be_admin,
                 )
                 # insert the user
                 db.session.add(user)
@@ -232,12 +237,12 @@ class VirtualUsersAPI(MethodView):
                     }
                 }
         else:
+            if not authenticated_user.admin:
+                abort(401)
+            users = [user.id for user in User.query.all()]
             responseObject = {
                 'status': 'success',
-                'data': [
-                        'user1',
-                        'user2',
-                ]
+                'data': users,
             }
         return responseObject
 
