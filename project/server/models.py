@@ -17,6 +17,7 @@ class User(db.Model):
     registered_on = db.Column(db.DateTime, nullable=False)
     admin = db.Column(db.Boolean, nullable=False, default=False)
     virtual_users = db.relationship("VirtualUser", backref="User", lazy='dynamic')
+    core_banking_identifier = db.Column(db.String(255), nullable=True)
 
     def __init__(self, email, password, admin=False):
         self.email = email
@@ -25,6 +26,7 @@ class User(db.Model):
         ).decode()
         self.registered_on = datetime.datetime.now()
         self.admin = admin
+        self.core_banking_identifier = None
 
     def encode_auth_token(self, user_id):
         """

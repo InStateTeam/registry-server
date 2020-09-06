@@ -7,6 +7,7 @@ from flask.views import MethodView
 from project.server import bcrypt, db
 from project.server.models import User, BlacklistToken, VirtualUser
 
+from project.server.auth.banking import BankingCoreUsersAPI
 
 auth_blueprint = Blueprint('auth', __name__)
 
@@ -298,6 +299,7 @@ login_view = LoginAPI.as_view('login_api')
 user_view = UserAPI.as_view('user_api')
 virtual_user_view = VirtualUsersAPI.as_view('virtual_user_api')
 logout_view = LogoutAPI.as_view('logout_api')
+banking_core_user_view = BankingCoreUsersAPI.as_view('banking_core_user_view')
 
 # add Rules for API Endpoints
 auth_blueprint.add_url_rule(
@@ -320,17 +322,22 @@ auth_blueprint.add_url_rule(
     view_func=logout_view,
     methods=['POST']
 )
+# auth_blueprint.add_url_rule(
+#     '/users/',
+#     defaults={'user_id': None, 'virtual_user_name': None},
+#     view_func = virtual_user_view,
+#     methods=['GET']
+# )
+# auth_blueprint.add_url_rule(
+#     '/users/<int:user_id>',
+#     defaults={'virtual_user_name': None},
+#     view_func = virtual_user_view,
+#     methods=['GET']
+# )
 auth_blueprint.add_url_rule(
-    '/users/',
-    defaults={'user_id': None, 'virtual_user_name': None},
-    view_func = virtual_user_view,
-    methods=['GET']
-)
-auth_blueprint.add_url_rule(
-    '/users/<int:user_id>',
-    defaults={'virtual_user_name': None},
-    view_func = virtual_user_view,
-    methods=['GET']
+    '/users/<int:user_id>/banking/core',
+    view_func = banking_core_user_view,
+    methods=['GET', 'POST']
 )
 auth_blueprint.add_url_rule(
     '/users/<int:user_id>/<string:virtual_user_name>',
