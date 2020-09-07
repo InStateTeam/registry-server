@@ -1,9 +1,9 @@
 # Find original README below
 
-[link](#test1)
+[Flask JWT Auth]
 
 
-# Flask JWT Auth {#test1}
+# Flask JWT Auth
 
 [![Build Status](https://travis-ci.org/realpython/flask-jwt-auth.svg?branch=master)](https://travis-ci.org/realpython/flask-jwt-auth)
 
