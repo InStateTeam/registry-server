@@ -10,7 +10,7 @@ database_name = 'flask_jwt_auth_2'
 
 class BaseConfig:
     """Base configuration."""
-    SECRET_KEY = os.getenv('SECRET_KEY', 'my_precious_2')
+    SECRET_KEY = os.getenv('SECRET_KEY', 'my_precious')
     DEBUG = False
     BCRYPT_LOG_ROUNDS = 13
     SQLALCHEMY_TRACK_MODIFICATIONS = False
