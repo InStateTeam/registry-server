@@ -1,0 +1,16 @@
+[Unit]
+Description=Microblog web application
+After=network.target
+
+# https://blog.miguelgrinberg.com/post/running-a-flask-application-as-a-service-with-systemd
+
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/dev/virtual-identities-two
+Environment="APP_SETTINGS=project.server.config.DevelopmentConfig"
+ExecStart=/home/ubuntu/dev/virtual-identities-two/venv/bin/python3 manage.py runserver -h 0.0.0.0 -p 5000
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
