@@ -13,7 +13,7 @@ $ git fetch
 $ git pull
 ```
 
-if not migrations folder is present
+if no migrations folder is present
 
 ```
 $ python3 manage.py db init
