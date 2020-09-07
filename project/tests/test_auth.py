@@ -9,6 +9,7 @@ import utils
 from project.server import db
 from project.server.models import User, BlacklistToken
 from project.tests.base import BaseTestCase
+from project.server.auth.constants import Constants
 
 
 def register_user(self, email, password):
@@ -198,6 +199,8 @@ class TestAuthBlueprint(BaseTestCase):
             data = json.loads(resp_get_identifier.data.decode())
             self.assertTrue(data['status'] == 'success')
             self.assertTrue(data['data']['identifier'] == member_identifier)
+            self.assertTrue(data['data']['username'] == Constants.operator_username)
+            self.assertTrue(data['data']['password'] == Constants.operator_password)
             resp_register = register_user        
 
     def test_user_no_member_identifier(self):

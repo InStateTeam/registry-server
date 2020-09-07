@@ -4,6 +4,7 @@ from flask.views import MethodView
 
 from project.server import bcrypt, db
 from project.server.models import User, BlacklistToken, VirtualUser
+from project.server.auth.constants import Constants
 
 class BankingCoreUsersAPI(MethodView):
     """
@@ -77,7 +78,9 @@ class BankingCoreUsersAPI(MethodView):
                 responseObject = {
                     'status': 'success',
                     'data': {
-                        'identifier': requested_user.core_banking_identifier
+                        'identifier': requested_user.core_banking_identifier,
+                        'username': Constants.operator_username,
+                        'password': Constants.operator_password,
                     }
                 }
         return responseObject
