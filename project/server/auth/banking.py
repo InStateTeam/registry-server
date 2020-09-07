@@ -81,6 +81,7 @@ class BankingCoreUsersAPI(MethodView):
                         'identifier': requested_user.core_banking_identifier,
                         'username': Constants.operator_username,
                         'password': Constants.operator_password,
+                        'tenant': Constants.tenant,
                     }
                 }
         return responseObject

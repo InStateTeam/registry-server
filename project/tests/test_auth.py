@@ -201,6 +201,7 @@ class TestAuthBlueprint(BaseTestCase):
             self.assertTrue(data['data']['identifier'] == member_identifier)
             self.assertTrue(data['data']['username'] == Constants.operator_username)
             self.assertTrue(data['data']['password'] == Constants.operator_password)
+            self.assertTrue(data['data']['tenant'] == Constants.tenant)
             resp_register = register_user        
 
     def test_user_no_member_identifier(self):
