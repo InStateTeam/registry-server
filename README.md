@@ -1,7 +1,28 @@
 # Find original README below
 
-[Flask JWT Auth]
+## upgrading/migrating
 
+```
+$ sudo systemctl status virtualid
+$ sudo systemctl stop  virtualid 
+$ git fetch
+$ git pull
+```
+
+if not migrations folder is present
+
+```
+$ python3 manage.py db init
+```
+
+then
+
+```
+$ python3 manage.py db migrate
+$ python3 manage.py db upgrade
+$ sudo systemctl start  virtualid 
+$ sudo systemctl status  virtualid
+```
 
 # Flask JWT Auth
 
