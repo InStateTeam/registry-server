@@ -82,6 +82,8 @@ class BankingCoreUsersAPI(MethodView):
                         'username': Constants.operator_username,
                         'password': Constants.operator_password,
                         'tenant': Constants.tenant,
+                        'fineractHost': Constants.fineractHost,
+                        'fineractPort': Constants.fineractPort,
                     }
                 }
         return responseObject
