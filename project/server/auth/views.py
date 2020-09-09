@@ -322,12 +322,12 @@ auth_blueprint.add_url_rule(
     view_func=logout_view,
     methods=['POST']
 )
-# auth_blueprint.add_url_rule(
-#     '/users/',
-#     defaults={'user_id': None, 'virtual_user_name': None},
-#     view_func = virtual_user_view,
-#     methods=['GET']
-# )
+auth_blueprint.add_url_rule(
+    '/users/',
+    defaults={'user_id': None, 'virtual_user_name': None},
+    view_func = virtual_user_view,
+    methods=['GET']
+)
 # auth_blueprint.add_url_rule(
 #     '/users/<int:user_id>',
 #     defaults={'virtual_user_name': None},
